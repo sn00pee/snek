@@ -11,8 +11,13 @@ interface Props {
 export default function TheSnek({pos = 0, speed = 30, distance = 6}: Props) {
     const position = useSnekPostion()
 
-    const getWindowWidth = () => {
-        return document.documentElement.clientWidth
+    const getBoundaries = () => {
+        return {
+            left: 0,
+            top: 0,
+            right: document.documentElement.clientWidth,
+            bottom: document.documentElement.clientHeight
+        }
     }
     const snek = useRef(null) 
     
@@ -32,6 +37,18 @@ export default function TheSnek({pos = 0, speed = 30, distance = 6}: Props) {
         position.setIsMoving('moveBack')
         position.setX(position.x - distance)
     }
+    const stop = () => {
+        position.setIsMoving('stop')
+    }
+
+    const checkPosition = () => {
+        const {left, right, top, bottom} = getBoundaries()
+        return position.x < left ||
+            position.y < top ||
+            position.y > (bottom - 14) ||
+            position.x > (right - 14)
+        
+    }
 
     const moveSnek = () => {
         console.log(`snek is moving: ${position.x}, ${position.y}`)
@@ -40,37 +57,45 @@ export default function TheSnek({pos = 0, speed = 30, distance = 6}: Props) {
 
     const handleKeydown = (e: KeyboardEvent) => {
         const { keyCode } = e
-        switch(keyCode) {
-            case 40:
-                moveDown()
-                break
-            case 38:
-                moveUp()
-                break
-            case 37:
-                moveBack()
-                break
-            case 39:
-                moveForward()
-                break
-            default:
-                console.log(keyCode)
+        const hitWall = checkPosition()
+        if (!hitWall) {
+            switch(keyCode) {
+                case 40:
+                    moveDown()
+                    break
+                case 38:
+                    moveUp()
+                    break
+                case 37:
+                    moveBack()
+                    break
+                case 39:
+                    moveForward()
+                    break
+                default:
+                    console.log(keyCode)
+            }
         }
     }
     
     const move = (action: string) => {
-        switch(action) {
-            case 'moveDown':
-                moveDown()
-                break
-            case 'moveUp':
-                moveUp()
-                break
-            case 'moveBack':
-                moveBack()
-                break
-            case 'moveForward':
-                moveForward()
+        const hitWall = checkPosition()
+        if (!hitWall) {
+            switch(action) {
+                case 'moveDown':
+                    moveDown()
+                    break
+                case 'moveUp':
+                    moveUp()
+                    break
+                case 'moveBack':
+                    moveBack()
+                    break
+                case 'moveForward':
+                    moveForward()
+            }
+        } else {
+            stop()
         }
     }
 
@@ -82,7 +107,7 @@ export default function TheSnek({pos = 0, speed = 30, distance = 6}: Props) {
 
     useEffect(() => {
         position.setIsFollowing(pos !== 0)
-        if(!position.isFollowing) {
+        if(!position.isFollowing || position.isMoving !== 'stop') {
             window.addEventListener('keydown', handleKeydown, true)
             const moving = setInterval(() => move(position.isMoving), speed)
             return () => {
