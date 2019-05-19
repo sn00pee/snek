@@ -1,0 +1,1 @@
+export type directionType = '' |'up' | 'down' | 'left' | 'right'
