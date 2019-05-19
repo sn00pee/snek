@@ -1,5 +1,6 @@
 import React from 'react';
 import TheSnek from './components/TheSnek'
+import TheFood from './components/TheFood'
 import './App.scss';
 
 const App: React.FC = () => {
@@ -9,6 +10,7 @@ const App: React.FC = () => {
         <h1>Snek</h1>
       </header>
       <TheSnek />
+      <TheFood />
     </div>
   );
 }
