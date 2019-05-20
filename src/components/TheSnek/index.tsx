@@ -1,14 +1,22 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
+import { MoveTypes, 
+    snekState, 
+    MOVE_RIGHT, 
+    MOVE_UP,
+    MOVE_DOWN, 
+    MOVE_LEFT 
+} from '../../store/snek'
 import useSnekPostion from '../../hooks/useSnekPosition'
 import './snek.scss'
 
 interface Props {
-    pos?: number;
+    pos: snekState;
     speed?: number;
     distance?: number;
+    onMove: (action: MoveTypes) => void
 }
 
-export default function TheSnek({pos = 0, speed = 50, distance = 10}: Props) {
+export default function TheSnek({pos, speed = 50, distance = 10, onMove }: Props) {
     const position = useSnekPostion()
 
     const getBoundaries = () => {
@@ -19,35 +27,34 @@ export default function TheSnek({pos = 0, speed = 50, distance = 10}: Props) {
             bottom: document.documentElement.clientHeight
         }
     }
-    
-    const snek = useRef(null) 
-    
+
     const moveForward = () => {
         position.setIsMoving('right')
-        position.setX(position.x + distance)
+        onMove(MOVE_RIGHT)
     }
     const moveDown = () => {
         position.setIsMoving('down')
-        position.setY(position.y + distance)
+        onMove(MOVE_DOWN)
     }
     const moveUp = () => {
         position.setIsMoving('up')
-        position.setY(position.y - distance)
+        onMove(MOVE_UP)
     }
     const moveBack = () => {
         position.setIsMoving('left')
-        position.setX(position.x - distance)
+        onMove(MOVE_LEFT)
     }
     const stop = () => {
         position.setIsMoving('')
+        onMove(null)
     }
 
     const checkPosition = () => {
         const {left, right, top, bottom} = getBoundaries()
-        return position.x < left ||
-            position.y < top ||
-            position.y > (bottom - 14) ||
-            position.x > (right - 14)
+        return pos.x < left ||
+            pos.y < top ||
+            pos.y > (bottom - 14) ||
+            pos.x > (right - 14)
         
     }
 
@@ -60,7 +67,7 @@ export default function TheSnek({pos = 0, speed = 50, distance = 10}: Props) {
     }
 
     const moveSnek = () => {
-        console.log(`snek is moving: ${position.x}, ${position.y}`)
+        console.log(`snek is moving: ${pos.x}, ${pos.y}`)
     }
 
     const handleKeydown = (e: KeyboardEvent) => {
@@ -110,17 +117,19 @@ export default function TheSnek({pos = 0, speed = 50, distance = 10}: Props) {
 
     const style: React.CSSProperties = {
         position: "absolute",
-        left: position.x,
-        top: position.y
+        left: pos.x,
+        top: pos.y
     }
 
     useEffect(() => {
-        position.setIsFollowing(pos !== 0)
+        position.setIsFollowing(false)
         window.addEventListener('keydown', handleKeydown, true)
         const moving = position.isMoving ? setInterval(() => move(position.isMoving), speed) : position.isMoving
+        
         if (!moving) {
             resetSnek()
         }
+
         return () => {
             window.removeEventListener('keydown', handleKeydown, true)
             if (moving) {
@@ -131,6 +140,6 @@ export default function TheSnek({pos = 0, speed = 50, distance = 10}: Props) {
 
 
     return (
-        <div className="snek" style={style} ref={snek}></div>
+        <div className="snek" style={style}></div>
     )
 }
