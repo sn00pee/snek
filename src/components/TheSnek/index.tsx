@@ -1,10 +1,14 @@
 import React, { useEffect } from 'react'
-import { MoveTypes, 
+import { 
+    MoveTypes, 
+    MoveSet, 
     snekState, 
     MOVE_RIGHT, 
     MOVE_UP,
     MOVE_DOWN, 
-    MOVE_LEFT 
+    MOVE_LEFT,
+    MOVE_RESET,
+    MOVE_DISTANCE
 } from '../../store/snek'
 import useSnekPostion from '../../hooks/useSnekPosition'
 import './snek.scss'
@@ -13,10 +17,11 @@ interface Props {
     pos: snekState;
     speed?: number;
     distance?: number;
-    onMove: (action: MoveTypes) => void
+    onMove: (action: MoveTypes) => void;
+    onMoveSet: (action: MoveSet) => void;
 }
 
-export default function TheSnek({pos, speed = 50, distance = 10, onMove }: Props) {
+export default function TheSnek({pos, speed = 50, distance = 10, onMove, onMoveSet }: Props) {
     const position = useSnekPostion()
 
     const getBoundaries = () => {
@@ -46,7 +51,7 @@ export default function TheSnek({pos, speed = 50, distance = 10, onMove }: Props
     }
     const stop = () => {
         position.setIsMoving('')
-        onMove(null)
+        resetSnek()
     }
 
     const checkPosition = () => {
@@ -60,10 +65,13 @@ export default function TheSnek({pos, speed = 50, distance = 10, onMove }: Props
 
     const resetSnek = () => {
         const { bottom, right } = getBoundaries()
-        const centerX = Math.ceil( (right / 2) / distance ) * distance
-        const centerY = Math.ceil( (bottom / 2) / distance ) * distance
-        position.setX(centerX)
-        position.setY(centerY)
+        const centerX = Math.ceil( (right / 2) / MOVE_DISTANCE ) * MOVE_DISTANCE
+        const centerY = Math.ceil( (bottom / 2) / MOVE_DISTANCE ) * MOVE_DISTANCE
+        
+        onMoveSet({type: MOVE_RESET, payload: {
+            x: centerX,
+            y: centerY
+        }})
     }
 
     const moveSnek = () => {

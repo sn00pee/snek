@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux'
 import { AppState } from './store'
-import { snekState, move, MoveTypes } from './store/snek'
+import { snekState, move, MoveTypes, set, MoveSet } from './store/snek'
 import TheSnek from './components/TheSnek'
 import TheFood from './components/TheFood'
 import './App.scss';
@@ -12,16 +12,18 @@ const mapStateToProps = (state: AppState) => ({
 
 interface AppProps {
   snek: snekState
-  move: typeof move
+  move: typeof move,
+  set: typeof set
 }
 
 class App extends React.Component<AppProps> {
-  componentDidMount() {
-    console.log(this.props.snek)
-  }
 
   move = (action: MoveTypes) => {
     this.props.move(action)
+  }
+
+  set = (action: MoveSet) => {
+    this.props.set(action)
   }
 
   render() {
@@ -30,7 +32,7 @@ class App extends React.Component<AppProps> {
         <header className="header">
           <h1>Snek</h1>
         </header>
-        <TheSnek pos={this.props.snek} onMove={this.move}  />
+        <TheSnek pos={this.props.snek} onMove={this.move} onMoveSet={this.set} />
         <TheFood />
       </div>
     );
@@ -39,5 +41,5 @@ class App extends React.Component<AppProps> {
 
 export default connect(
   mapStateToProps,
-  { move }
+  { move, set }
 )(App);
