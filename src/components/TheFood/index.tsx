@@ -1,9 +1,17 @@
 import React, { useEffect, CSSProperties } from 'react'
-import useFoodPosition from '../../hooks/useFoodPosition'
+import { intialSnekState, snekState } from '../../store/snek'
+import { initialFoodState, foodState, FoodAction, FOOD_SET, FOOD_ATE } from '../../store/food'
 import './food.scss'
 
-export default function TheFood ({padding = 10}) {
-    const position = useFoodPosition()
+interface Props {
+    food?: foodState
+    onSet: (action: FoodAction) => void
+    snek: snekState
+    padding?: number
+}
+
+export default function TheFood ({padding = 10, snek = intialSnekState, food = initialFoodState, onSet }: Props) {
+    const position = {...food}
 
     const getBoundaries = () => {
         return {
@@ -21,18 +29,41 @@ export default function TheFood ({padding = 10}) {
         return Math.ceil(rando / rounder) * rounder;
     }
 
-    const setRandomPosition = (x: number, y: number) => {
-        position.setX(x)
-        position.setY(y)
+    const setPosition = (x: number, y: number, ate:number) => {
+        onSet({
+            type: FOOD_SET,
+            payload: {...position, x, y, ate}
+        })
     }
 
-    useEffect(() => {
+    const setRandomPostion = (eaten?: boolean) => {
         const boundaries = getBoundaries()
         const x = getRandomInt(boundaries.minX, boundaries.maxX, padding)
         const y = getRandomInt(boundaries.minY, boundaries.maxY, padding)
-        setRandomPosition(x, y)
+        let ate = position.ate
+        if (eaten) {
+            ate = ate + 1
+        }
+        setPosition(x, y, ate)
+
         console.log(`food is at: ${x}, ${y}`)
+    }
+
+    useEffect(() => {
+        setRandomPostion()
     }, [])
+
+    const checkSnek = (snek: snekState, pos: foodState) => {
+        return (snek.x === pos.x && snek.y === pos.y)
+    }
+
+    useEffect(() => {
+       const ateFood = checkSnek(snek, position)
+       if (ateFood) {
+        setRandomPostion(ateFood)
+       }
+        
+    }, [snek])
 
     const style: CSSProperties = {
         left: position.x,

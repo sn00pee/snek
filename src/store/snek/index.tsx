@@ -6,6 +6,7 @@ export const MOVE_LEFT = 'MOVE_LEFT'
 export const MOVE_DISTANCE = 10
 
 export const MOVE_RESET = 'MOVE_RESET'
+export const MOVE_PASSED = 'MOVE_PASSED'
 
 export type MOVE_UP = typeof MOVE_UP
 export type MOVE_DOWN = typeof MOVE_DOWN
@@ -13,9 +14,9 @@ export type MOVE_RIGHT = typeof MOVE_RIGHT
 export type MOVE_LEFT = typeof MOVE_LEFT
 
 export type MOVE_RESET = typeof MOVE_RESET
-
-export type MoveSets = MOVE_RESET
-export type MoveTypes = MOVE_UP | MOVE_DOWN | MOVE_RIGHT | MOVE_LEFT | null
+export type MOVE_PASSED = typeof MOVE_PASSED
+export type MoveSets = MOVE_RESET | MOVE_PASSED
+export type MoveTypes = MOVE_UP | MOVE_DOWN | MOVE_RIGHT | MOVE_LEFT | boolean
 
 export interface snekState {
     x: number
@@ -50,30 +51,30 @@ export function set(action: MoveSet): Moves {
     }
 }
 
-const intialState: snekState = {
+export const intialSnekState: snekState = {
     x: 0,
     y: 0,
-    isMoving: null
+    isMoving: false
 }
 
 export function snekReducer(
-    state = intialState,
+    state = intialSnekState,
     action: Moves
-): snekState {
+) {
     switch (action.type) {
         case MOVE_UP:
-            return {...state, y: state.y - MOVE_DISTANCE}
+            return {...state, y: state.y - MOVE_DISTANCE, isMoving: action.type}
     
         case MOVE_DOWN:
-            return {...state, y: state.y + MOVE_DISTANCE}
+            return {...state, y: state.y + MOVE_DISTANCE, isMoving: action.type}
     
         case MOVE_LEFT:
-            return {...state, x: state.x - MOVE_DISTANCE}
+            return {...state, x: state.x - MOVE_DISTANCE, isMoving: action.type}
     
         case MOVE_RIGHT:
-            return {...state, x: state.x + MOVE_DISTANCE}
+            return {...state, x: state.x + MOVE_DISTANCE, isMoving: action.type}
         case MOVE_RESET: 
-            return {...state, x: action.payload.x , y: action.payload.y}
+            return {...state, x: action.payload.x , y: action.payload.y, isMoving: false }
     
         default:
             return state

@@ -1,0 +1,22 @@
+
+.dropdown-enter {
+    transform: translateY(-100%);
+    opacity: 0;
+}
+.dropdown-enter-active, .dropdown-exit-active {
+    transform: translateY(0);
+    opacity: 1;
+    transition: transform 300ms, opacity 300ms;
+}
+
+.dropdown-exit {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.dropdown-exit-active {
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform 300ms, opacity 300ms;
+}
+

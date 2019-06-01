@@ -1,153 +1,150 @@
 import React, { useEffect } from 'react'
-import { 
-    MoveTypes, 
-    MoveSet, 
-    snekState, 
-    MOVE_RIGHT, 
-    MOVE_UP,
-    MOVE_DOWN, 
-    MOVE_LEFT,
-    MOVE_RESET,
-    MOVE_DISTANCE
+import {
+  MoveTypes,
+  MoveSet,
+  snekState,
+  MOVE_RIGHT,
+  MOVE_UP,
+  MOVE_DOWN,
+  MOVE_LEFT,
+  MOVE_RESET,
+  MOVE_DISTANCE
 } from '../../store/snek'
-import useSnekPostion from '../../hooks/useSnekPosition'
 import './snek.scss'
 
 interface Props {
-    pos: snekState;
-    speed?: number;
-    distance?: number;
-    onMove: (action: MoveTypes) => void;
-    onMoveSet: (action: MoveSet) => void;
+  pos: snekState
+  speed?: number
+  distance?: number
+  onMove: (action: MoveTypes) => void
+  onMoveSet: (action: MoveSet) => void
 }
 
-export default function TheSnek({pos, speed = 50, distance = 10, onMove, onMoveSet }: Props) {
-    const position = useSnekPostion()
+export default function TheSnek({ pos, speed = 50, onMove, onMoveSet }: Props) {
+  const getBoundaries = () => {
+    return {
+      left: 0,
+      top: 0,
+      right: document.documentElement.clientWidth,
+      bottom: document.documentElement.clientHeight
+    }
+  }
 
-    const getBoundaries = () => {
-        return {
-            left: 0,
-            top: 0,
-            right: document.documentElement.clientWidth,
-            bottom: document.documentElement.clientHeight
-        }
-    }
+  const moveForward = () => {
+    onMove(MOVE_RIGHT)
+  }
+  const moveDown = () => {
+    onMove(MOVE_DOWN)
+  }
+  const moveUp = () => {
+    onMove(MOVE_UP)
+  }
+  const moveBack = () => {
+    onMove(MOVE_LEFT)
+  }
+  const stop = () => {
+    resetSnek()
+  }
 
-    const moveForward = () => {
-        position.setIsMoving('right')
-        onMove(MOVE_RIGHT)
-    }
-    const moveDown = () => {
-        position.setIsMoving('down')
-        onMove(MOVE_DOWN)
-    }
-    const moveUp = () => {
-        position.setIsMoving('up')
-        onMove(MOVE_UP)
-    }
-    const moveBack = () => {
-        position.setIsMoving('left')
-        onMove(MOVE_LEFT)
-    }
-    const stop = () => {
-        position.setIsMoving('')
-        resetSnek()
-    }
-
-    const checkPosition = () => {
-        const {left, right, top, bottom} = getBoundaries()
-        return pos.x < left ||
-            pos.y < top ||
-            pos.y > (bottom - 14) ||
-            pos.x > (right - 14)
-        
-    }
-
-    const resetSnek = () => {
-        const { bottom, right } = getBoundaries()
-        const centerX = Math.ceil( (right / 2) / MOVE_DISTANCE ) * MOVE_DISTANCE
-        const centerY = Math.ceil( (bottom / 2) / MOVE_DISTANCE ) * MOVE_DISTANCE
-        
-        onMoveSet({type: MOVE_RESET, payload: {
-            x: centerX,
-            y: centerY
-        }})
-    }
-
-    const moveSnek = () => {
-        console.log(`snek is moving: ${pos.x}, ${pos.y}`)
-    }
-
-    const handleKeydown = (e: KeyboardEvent) => {
-        const { keyCode } = e
-        const hitWall = checkPosition()
-        if (!hitWall) {
-            switch(keyCode) {
-                case 40:
-                    moveDown()
-                    break
-                case 38:
-                    moveUp()
-                    break
-                case 37:
-                    moveBack()
-                    break
-                case 39:
-                    moveForward()
-                    break
-                default:
-                    console.log(keyCode)
-            }
-        }
-    }
-    
-    const move = (action: string) => {
-        const hitWall = checkPosition()
-        if (!hitWall) {
-            switch(action) {
-                case 'down':
-                    moveDown()
-                    break
-                case 'up':
-                    moveUp()
-                    break
-                case 'left':
-                    moveBack()
-                    break
-                case 'right':
-                    moveForward()
-            }
-        } else {
-            stop()
-        }
-        moveSnek() 
-    }
-
-    const style: React.CSSProperties = {
-        position: "absolute",
-        left: pos.x,
-        top: pos.y
-    }
-
-    useEffect(() => {
-        position.setIsFollowing(false)
-        window.addEventListener('keydown', handleKeydown, true)
-        const moving = position.isMoving ? setInterval(() => move(position.isMoving), speed) : position.isMoving
-        
-        if (!moving) {
-            resetSnek()
-        }
-
-        return () => {
-            window.removeEventListener('keydown', handleKeydown, true)
-            if (moving) {
-                clearInterval(moving)                
-            }
-        }
-    })
-
-
+  const checkPosition = () => {
+    const { left, right, top, bottom } = getBoundaries()
     return (
-        <div className="snek" style={style}></div>
+      pos.x < left || pos.y < top || pos.y > bottom - 14 || pos.x > right - 14
     )
+  }
+
+  const resetSnek = () => {
+    const { bottom, right } = getBoundaries()
+    const centerX = Math.ceil(right / 2 / MOVE_DISTANCE) * MOVE_DISTANCE
+    const centerY = Math.ceil(bottom / 2 / MOVE_DISTANCE) * MOVE_DISTANCE
+
+    onMoveSet({
+      type: MOVE_RESET,
+      payload: {
+        x: centerX,
+        y: centerY
+      }
+    })
+  }
+
+  const moveSnek = () => {
+    console.log(`snek is moving: ${pos.x}, ${pos.y}, ${pos.isMoving}`)
+  }
+
+  const handleKeydown = (e: KeyboardEvent) => {
+    const { keyCode } = e
+    const hitWall = checkPosition()
+    if (!hitWall) {
+      switch (keyCode) {
+        case 40:
+          if (pos.isMoving !== MOVE_DOWN) moveDown()
+          break
+        case 38:
+          if (pos.isMoving !== MOVE_UP) moveUp()
+          break
+        case 37:
+          if (pos.isMoving !== MOVE_LEFT) moveBack()
+          break
+        case 39:
+          if (pos.isMoving !== MOVE_RIGHT) moveForward()
+          break
+        default:
+          console.log(keyCode)
+      }
+    }
+  }
+
+  const move = (action: MoveTypes) => {
+    const hitWall = checkPosition()
+    if (!hitWall) {
+      switch (action) {
+        case MOVE_DOWN:
+          moveDown()
+          break
+        case MOVE_UP:
+          moveUp()
+          break
+        case MOVE_LEFT:
+          moveBack()
+          break
+        case MOVE_RIGHT:
+          moveForward()
+      }
+    } else {
+      stop()
+    }
+    moveSnek()
+  }
+
+  const style: React.CSSProperties = {
+    position: 'absolute',
+    left: pos.x,
+    top: pos.y
+  }
+
+  useEffect(() => {
+    resetSnek()
+  }, [])
+  
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeydown, true)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeydown, true)
+    }
+  })
+
+  useEffect(() => {
+    const moving = pos.isMoving
+      ? setInterval(() => move(pos.isMoving), speed)
+      : pos.isMoving
+
+    return () => {
+      if (moving) {
+        clearInterval(moving)
+      }
+    }
+  })
+
+  return <div className="snek" style={style} />
 }
