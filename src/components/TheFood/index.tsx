@@ -54,7 +54,7 @@ export default function TheFood ({padding = 10, snek = intialSnekState, food = i
     }, [])
 
     const checkSnek = (snek: snekState, pos: foodState) => {
-        return (snek.x === pos.x && snek.y === pos.y)
+        return (snek.x === pos.x && snek.y === pos.y) && snek.isMoving !== false
     }
 
     useEffect(() => {
