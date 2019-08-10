@@ -67,6 +67,7 @@ class App extends React.Component<AppProps, StateProps> {
         </CSSTransition>
         <TheSnek
           pos={this.props.snek}
+          length={this.props.food.ate}
           onMove={this.move}
           onMoveSet={this.set}
         />

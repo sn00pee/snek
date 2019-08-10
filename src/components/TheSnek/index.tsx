@@ -11,16 +11,24 @@ import {
   MOVE_DISTANCE
 } from '../../store/snek'
 import './snek.scss'
+import { posix } from 'path';
 
 interface Props {
   pos: snekState
   speed?: number
   distance?: number
+  length: number
   onMove: (action: MoveTypes) => void
   onMoveSet: (action: MoveSet) => void
 }
 
-export default function TheSnek({ pos, speed = 50, onMove, onMoveSet }: Props) {
+export default function TheSnek({
+  pos,
+  length,
+  speed = 50,
+  onMove,
+  onMoveSet
+}: Props) {
   const getBoundaries = () => {
     return {
       left: 0,
@@ -52,6 +60,8 @@ export default function TheSnek({ pos, speed = 50, onMove, onMoveSet }: Props) {
       pos.x < left || pos.y < top || pos.y > bottom - 14 || pos.x > right - 14
     )
   }
+
+  const body = Array.from(Array(length * 5).keys())
 
   const resetSnek = () => {
     const { bottom, right } = getBoundaries()
@@ -125,7 +135,7 @@ export default function TheSnek({ pos, speed = 50, onMove, onMoveSet }: Props) {
   useEffect(() => {
     resetSnek()
   }, [])
-  
+
   useEffect(() => {
     window.addEventListener('keydown', handleKeydown, true)
 
@@ -146,5 +156,13 @@ export default function TheSnek({ pos, speed = 50, onMove, onMoveSet }: Props) {
     }
   })
 
-  return <div className="snek" style={style} />
+  return (
+    <div>
+      <div className="snek" style={style} />
+      {body.map((item, i) => <div className="snek" style={{
+        ...style,
+        left: pos.x - (10 * (i + 1))
+      }}>{i}</div>)}
+    </div>
+  )
 }
