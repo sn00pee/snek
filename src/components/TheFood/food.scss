@@ -1,9 +1,32 @@
-.food {
+.apple {
     position: absolute;
-    height: 10px;
-    width:   10px;
-    border-radius: 5px;
-    background: pink;
-    border: 1px solid black;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle at 30% 30%, #ff6b6b, #cc2222);
+    border-radius: 50% 50% 45% 50%;
+    box-shadow: inset -2px -2px 4px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
 
+.apple::before {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 8px;
+    background: #6b4423;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 1px;
+}
+
+.apple::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 3px;
+    background: #2d5016;
+    top: -5px;
+    left: 55%;
+    border-radius: 50%;
+    transform: rotate(-30deg);
 }
