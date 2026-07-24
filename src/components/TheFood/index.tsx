@@ -71,6 +71,6 @@ export default function TheFood ({padding = 10, snek = intialSnekState, food = i
     }
 
     return (
-        <div className="food" style={style}></div>
+        <div className="apple" style={style}></div>
     )
 }
