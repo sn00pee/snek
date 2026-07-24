@@ -11,7 +11,6 @@ import {
   MOVE_DISTANCE
 } from '../../store/snek'
 import './snek.scss'
-import { posix } from 'path';
 
 interface Props {
   pos: snekState
@@ -158,11 +157,19 @@ export default function TheSnek({
 
   return (
     <div>
-      <div className="snek" style={style} />
-      {body.map((item, i) => <div className="snek" style={{
-        ...style,
-        left: pos.x - (10 * (i + 1))
-      }}>{i}</div>)}
+      <div className="snek" style={style} key="snek-head" />
+      {body.map((item, i) => (
+        <div
+          className="snek"
+          key={`snek-${i}`}
+          style={{
+            ...style,
+            left: pos.x - 10 * (i + 1)
+          }}
+        >
+          {i}
+        </div>
+      ))}
     </div>
   )
 }

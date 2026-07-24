@@ -60,7 +60,14 @@ class App extends React.Component<AppProps, StateProps> {
   render() {
     return (
       <div className="App">
-        <CSSTransition classNames="dropdown" in={this.state.showScore} mountOnEnter unmountOnExit timeout={1000} onEntered={this.toggleScore}>
+        <CSSTransition
+          classNames="dropdown"
+          in={this.state.showScore}
+          mountOnEnter
+          unmountOnExit
+          timeout={1000}
+          onEntered={this.toggleScore}
+        >
           <header className="header">
             <h1>Snek: {this.props.food.ate}</h1>
           </header>
@@ -81,7 +88,4 @@ class App extends React.Component<AppProps, StateProps> {
   }
 }
 
-export default connect(
-  mapStateToProps,
-  { move, set, setFood }
-)(App)
+export default connect(mapStateToProps, { move, set, setFood })(App)
